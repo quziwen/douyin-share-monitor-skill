@@ -36,16 +36,18 @@ v2.0 不再要求用户自行寻找上游项目。公开安装流程会固定使
 
 - 完整源码 fork：[`quziwen/douyin-share@v2.0.0`](https://github.com/quziwen/douyin-share/tree/v2.0.0)
 - 工作流 Skill：本仓库的 `skill/douyin-share-monitor`
-- Windows 一键安装器：`install.ps1`
+- Windows 一键安装器：`install.ps1`（当前 `v2.0.1`）
 
 源码通过 GitHub fork 保留原作者、提交历史和上下游关系。详见 [SOURCE.md](SOURCE.md)。
+
+`v2.0.1` 修复了 Python 3.14 误选、中断后不能安全续装，以及慢速 PyPI 连接容易超时的问题；运行源码仍固定为 `douyin-share@v2.0.0`。
 
 ### 安装前准备
 
 - Windows PowerShell 5.1 或 PowerShell 7
 - Git for Windows
 - Node.js LTS（包含 Corepack）或可用的 `pnpm`
-- 受 `faster-whisper` 支持的 64 位 Python 3
+- 64 位 Python 3.9–3.13，或可提供 Python 3.11 的 `uv`
 - FFmpeg，并确保 `ffmpeg`、`ffprobe` 在 `PATH`
 - Obsidian；飞书仅在明确选择为输出目标时需要
 
@@ -81,7 +83,7 @@ powershell -ExecutionPolicy Bypass -File .\install.ps1 -InstallFor Claude
 powershell -ExecutionPolicy Bypass -File .\install.ps1 -InstallFor Both
 ```
 
-已有依赖、只想安装 Skill 时，可以使用 `-SkipDependencies`。安装器不会覆盖非空的源码目录；可通过 `-ProjectRoot` 指定新的空目录。
+已有依赖、只想安装 Skill 时，可以使用 `-SkipDependencies`。安装中断后可直接重新运行；安装器只会续用来源、版本和工作区状态均匹配的源码目录，不会覆盖其他非空目录。也可通过 `-ProjectRoot` 指定新的空目录。
 
 ### 常用口令
 
@@ -142,16 +144,18 @@ v2.0 no longer requires users to locate the upstream project manually. The publi
 
 - Full source fork: [`quziwen/douyin-share@v2.0.0`](https://github.com/quziwen/douyin-share/tree/v2.0.0)
 - Workflow Skill: `skill/douyin-share-monitor` in this repository
-- Windows installer: `install.ps1`
+- Windows installer: `install.ps1` (current version: `v2.0.1`)
 
 The source is published as a GitHub fork so the original author, history, and upstream relationship remain visible. See [SOURCE.md](SOURCE.md).
+
+`v2.0.1` fixes accidental Python 3.14 selection, safe resume after interruption, and timeouts on slow PyPI connections. The runnable source remains pinned to `douyin-share@v2.0.0`.
 
 ### Prerequisites
 
 - Windows PowerShell 5.1 or PowerShell 7
 - Git for Windows
 - Node.js LTS with Corepack, or an available `pnpm`
-- A supported 64-bit Python 3 runtime
+- 64-bit Python 3.9–3.13, or `uv` capable of providing Python 3.11
 - FFmpeg with both `ffmpeg` and `ffprobe` on `PATH`
 - Obsidian; Feishu is optional and only needed when selected as an output
 
@@ -175,7 +179,7 @@ After setup, fill in the local `.env` and complete the first Douyin login in a v
 powershell -ExecutionPolicy Bypass -File .\install.ps1 -InstallFor Claude
 ```
 
-Use `-InstallFor Both` to install both Skill copies. Use `-SkipDependencies` only when the runnable project and its dependencies are already available. The installer never overwrites a non-empty source directory; use `-ProjectRoot` to choose a new empty target.
+Use `-InstallFor Both` to install both Skill copies. Use `-SkipDependencies` only when the runnable project and its dependencies are already available. An interrupted installation can be rerun safely: the installer resumes only when the source, pinned version, and tracked worktree state match. It never overwrites another non-empty directory; use `-ProjectRoot` to choose a new empty target.
 
 ### Example prompts
 
