@@ -1,0 +1,4 @@
+interface:
+  display_name: "Douyin Share Monitor"
+  short_description: "Capture Douyin shares into verified local knowledge"
+  default_prompt: "Use $douyin-share-monitor to capture a Douyin share and verify each output stage safely."

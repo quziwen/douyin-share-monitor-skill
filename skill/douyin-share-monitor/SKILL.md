@@ -7,7 +7,13 @@ description: Manage a Windows-based douyin-share workflow for capturing Douyin v
 
 ## Resolve the project
 
-- Locate the user's existing `douyin-share` checkout from the current workspace or an explicitly supplied path. Ask for the path only when it cannot be resolved safely.
+- Resolve the runnable project in this order:
+  1. an explicit project path in the current request;
+  2. the `DOUYIN_SHARE_PROJECT_ROOT` environment variable;
+  3. the `.project-root` file beside this installed `SKILL.md`;
+  4. a verified `douyin-share` checkout in the current workspace.
+- The official v2 installer writes `.project-root` locally. Read only that path pointer; never read `.env` or browser state while resolving the project.
+- Verify the resolved checkout contains `package.json`, `src/`, `scripts/start-monitor.ps1`, and `scripts/stop-monitor.ps1`. Ask for the path only when it cannot be resolved safely.
 - Read the repository's `AGENTS.md`, `CLAUDE.md`, `README.md`, and relevant operating documentation before acting.
 - Prefer the repository's PowerShell and Node entrypoints. Do not silently modify source code, dependencies, or configuration.
 - Resolve Base, table, Obsidian, chat, and profile targets from user-approved project documentation or an explicit target in the current request. Never embed those identifiers in this Skill.

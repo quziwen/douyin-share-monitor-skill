@@ -10,7 +10,7 @@
 
 它就会完成链接解析、视频抓取、本地转写、内容整理，并保存成 Obsidian 笔记。默认本地优先，不读取 Cookie、Token 或 `.env`，也不会顺手写入飞书；只有你明确指定目标时才扩展到飞书文档或 Base。
 
-开源仓库：https://github.com/quziwen/douyin-share-monitor-skill
+公开仓库：https://github.com/quziwen/douyin-share-monitor-skill
 
 ## 中文长版
 
@@ -22,7 +22,7 @@
 
 这不是一个“显示成功就算完成”的脚本。媒体匹配、音轨、转写、Obsidian 和外部写入分别验收，任何缺失都会单独报告。
 
-开源仓库：https://github.com/quziwen/douyin-share-monitor-skill
+公开仓库：https://github.com/quziwen/douyin-share-monitor-skill
 
 ## English short version
 

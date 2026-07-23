@@ -1,4 +1,4 @@
-# douyin-share-monitor Skill
+# douyin-share-monitor Skill v2.0
 
 [中文](#中文) · [English](#english)
 
@@ -30,34 +30,58 @@
 - **证据分层。** 下载、转写、Obsidian、飞书和监控状态分别验收。
 - **隐私保护。** 不读取或输出 `.env`、Cookie、Token、浏览器 Profile、私信正文、签名媒体地址或完整转写。
 
-### 依赖
+### v2.0 包含什么
 
-本 Skill 是工作流层，不包含抖音抓取器、登录态、模型或密钥。使用前需要：
+v2.0 不再要求用户自行寻找上游项目。公开安装流程会固定使用：
 
-- 一个可运行的 [`douyin-share`](https://github.com/DannyZZ2/douyin-share) 项目副本
-- Windows PowerShell、Node.js 和项目依赖
-- Playwright 浏览器运行时
-- 项目内 Python 虚拟环境和本地 Whisper-compatible 转写能力
-- Obsidian；飞书仅在你明确选择为输出目标时需要
+- 完整源码 fork：[`quziwen/douyin-share@v2.0.0`](https://github.com/quziwen/douyin-share/tree/v2.0.0)
+- 工作流 Skill：本仓库的 `skill/douyin-share-monitor`
+- Windows 一键安装器：`install.ps1`
 
-### 安装到 Codex
+源码通过 GitHub fork 保留原作者、提交历史和上下游关系。详见 [SOURCE.md](SOURCE.md)。
+
+### 安装前准备
+
+- Windows PowerShell 5.1 或 PowerShell 7
+- Git for Windows
+- Node.js LTS（包含 Corepack）或可用的 `pnpm`
+- 受 `faster-whisper` 支持的 64 位 Python 3
+- FFmpeg，并确保 `ffmpeg`、`ffprobe` 在 `PATH`
+- Obsidian；飞书仅在明确选择为输出目标时需要
+
+安装器不会代替用户登录抖音，也不会创建真实飞书配置。
+
+### 一键安装到 Codex
 
 ```powershell
 git clone https://github.com/quziwen/douyin-share-monitor-skill.git
-Copy-Item -Recurse -Force `
-  '.\douyin-share-monitor-skill\skill\douyin-share-monitor' `
-  "$env:USERPROFILE\.codex\skills\douyin-share-monitor"
+Set-Location .\douyin-share-monitor-skill
+powershell -ExecutionPolicy Bypass -File .\install.ps1 -InstallFor Codex
 ```
 
-重新打开 Codex 任务后即可通过自然语言触发。
+安装器会：
+
+1. 下载固定版本的完整源码到 `$env:USERPROFILE\douyin-share`；
+2. 安装 Node 项目依赖、Playwright Chromium、Python 项目依赖和 `faster-whisper`；
+3. 从 `.env.example` 创建本机 `.env` 空白模板，不覆盖已有文件；
+4. 安装 Skill，并在本机写入项目定位文件；
+5. 运行类型检查、自动化测试和转写依赖检查。
+
+安装完成后，需要用户自行填写本机 `.env`，并在可见浏览器中完成首次抖音登录。请勿把 `.env`、Cookie 或浏览器 Profile 发到 Issue 或聊天中。
 
 ### 安装到 Claude Code
 
 ```powershell
-Copy-Item -Recurse -Force `
-  '.\douyin-share-monitor-skill\skill\douyin-share-monitor' `
-  "$env:USERPROFILE\.claude\skills\douyin-share-monitor"
+powershell -ExecutionPolicy Bypass -File .\install.ps1 -InstallFor Claude
 ```
+
+同时安装到 Codex 和 Claude Code：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\install.ps1 -InstallFor Both
+```
+
+已有依赖、只想安装 Skill 时，可以使用 `-SkipDependencies`。安装器不会覆盖非空的源码目录；可通过 `-ProjectRoot` 指定新的空目录。
 
 ### 常用口令
 
@@ -81,8 +105,8 @@ Copy-Item -Recurse -Force `
 - 抖音页面和接口可能变化，真实抓取需要单独运行验证。
 - 首次登录必须由用户在可见浏览器中完成。
 - Skill 不内置任何本机路径、Base 标识、会话名称或凭证。
-- 本仓库只发布工作流 Skill，不代表上游项目已经完成生产验收。
-- 本仓库暂未声明开源许可证；正式复用或再分发前请先确认授权。
+- 本地测试通过不等于真实抖音、Whisper、Obsidian 或飞书端到端验收。
+- 上游源码目前未声明开源许可证；GitHub fork 保留来源关系，但不会自动授予额外的再分发或重新许可权利。
 
 ## English
 
@@ -112,34 +136,46 @@ into a verifiable knowledge-capture pipeline:
 - **Evidence-based completion.** Media, transcription, Obsidian, Feishu, and monitor health are verified separately.
 - **Privacy boundaries.** The Skill does not read or expose `.env`, cookies, tokens, browser profiles, private messages, signed media URLs, or full transcripts.
 
-### Requirements
+### What v2.0 includes
 
-This repository provides the workflow layer only. You still need:
+v2.0 no longer requires users to locate the upstream project manually. The public installation flow pins:
 
-- A working checkout of [`douyin-share`](https://github.com/DannyZZ2/douyin-share)
-- Windows PowerShell, Node.js, and project dependencies
-- A Playwright browser runtime
-- A project-local Python environment with Whisper-compatible transcription
+- Full source fork: [`quziwen/douyin-share@v2.0.0`](https://github.com/quziwen/douyin-share/tree/v2.0.0)
+- Workflow Skill: `skill/douyin-share-monitor` in this repository
+- Windows installer: `install.ps1`
+
+The source is published as a GitHub fork so the original author, history, and upstream relationship remain visible. See [SOURCE.md](SOURCE.md).
+
+### Prerequisites
+
+- Windows PowerShell 5.1 or PowerShell 7
+- Git for Windows
+- Node.js LTS with Corepack, or an available `pnpm`
+- A supported 64-bit Python 3 runtime
+- FFmpeg with both `ffmpeg` and `ffprobe` on `PATH`
 - Obsidian; Feishu is optional and only needed when selected as an output
 
-### Install for Codex
+The installer does not log into Douyin or create real Feishu configuration.
+
+### One-command setup for Codex
 
 ```powershell
 git clone https://github.com/quziwen/douyin-share-monitor-skill.git
-Copy-Item -Recurse -Force `
-  '.\douyin-share-monitor-skill\skill\douyin-share-monitor' `
-  "$env:USERPROFILE\.codex\skills\douyin-share-monitor"
+Set-Location .\douyin-share-monitor-skill
+powershell -ExecutionPolicy Bypass -File .\install.ps1 -InstallFor Codex
 ```
 
-Open a new Codex task and invoke it with natural language.
+The installer clones the pinned source release, installs Node project dependencies, Playwright Chromium, Python project dependencies, and `faster-whisper`, creates a blank local `.env` from `.env.example`, installs the Skill, writes a local project pointer, and runs automated verification.
+
+After setup, fill in the local `.env` and complete the first Douyin login in a visible browser. Never post `.env`, cookies, or browser-profile content in issues or chats.
 
 ### Install for Claude Code
 
 ```powershell
-Copy-Item -Recurse -Force `
-  '.\douyin-share-monitor-skill\skill\douyin-share-monitor' `
-  "$env:USERPROFILE\.claude\skills\douyin-share-monitor"
+powershell -ExecutionPolicy Bypass -File .\install.ps1 -InstallFor Claude
 ```
+
+Use `-InstallFor Both` to install both Skill copies. Use `-SkipDependencies` only when the runnable project and its dependencies are already available. The installer never overwrites a non-empty source directory; use `-ProjectRoot` to choose a new empty target.
 
 ### Example prompts
 
@@ -163,8 +199,8 @@ A single capture command does not authorize a new Douyin login, external LLM cal
 - Douyin behavior may change, so real capture still requires runtime validation.
 - First-time login must be completed by the user in a visible browser.
 - No local path, Base identifier, chat name, credential, or browser state is bundled.
-- Publishing this Skill does not claim production acceptance for the upstream project.
-- No open-source license has been declared yet; confirm permission before reuse or redistribution.
+- Local tests do not prove real Douyin, Whisper, Obsidian, or Feishu end-to-end acceptance.
+- The upstream source currently declares no open-source license. The GitHub fork preserves attribution but does not create additional redistribution or relicensing rights.
 
 ## Disclaimer
 
