@@ -1,4 +1,4 @@
-# douyin-share-monitor Skill v2.0
+# douyin-share-monitor Skill v2.0.2
 
 [中文](#中文) · [English](#english)
 
@@ -36,11 +36,11 @@ v2.0 不再要求用户自行寻找上游项目。公开安装流程会固定使
 
 - 完整源码 fork：[`quziwen/douyin-share@v2.0.0`](https://github.com/quziwen/douyin-share/tree/v2.0.0)
 - 工作流 Skill：本仓库的 `skill/douyin-share-monitor`
-- Windows 一键安装器：`install.ps1`（当前 `v2.0.1`）
+- Windows 一键安装器：`install.ps1`（当前 `v2.0.2`）
 
 源码通过 GitHub fork 保留原作者、提交历史和上下游关系。详见 [SOURCE.md](SOURCE.md)。
 
-`v2.0.1` 修复了 Python 3.14 误选、中断后不能安全续装，以及慢速 PyPI 连接容易超时的问题；运行源码仍固定为 `douyin-share@v2.0.0`。
+`v2.0.2` 默认下载并离线复验 `base` Whisper 模型，解决“程序包已安装、首次转写才发现模型不可用”的问题。它继承 `v2.0.1` 的 Python 3.11、断点续装和慢速下载修复；运行源码仍固定为 `douyin-share@v2.0.0`。
 
 ### 安装前准备
 
@@ -66,10 +66,13 @@ powershell -ExecutionPolicy Bypass -File .\install.ps1 -InstallFor Codex
 1. 下载固定版本的完整源码到 `$env:USERPROFILE\douyin-share`；
 2. 安装 Node 项目依赖、Playwright Chromium、Python 项目依赖和 `faster-whisper`；
 3. 从 `.env.example` 创建本机 `.env` 空白模板，不覆盖已有文件；
-4. 安装 Skill，并在本机写入项目定位文件；
-5. 运行类型检查、自动化测试和转写依赖检查。
+4. 运行类型检查、自动化测试和转写依赖检查；
+5. 从 Hugging Face 下载固定 revision 的 `base` 模型，并使用仅本地文件模式重新加载确认；
+6. 安装 Skill，并在本机写入项目定位文件。
 
 安装完成后，需要用户自行填写本机 `.env`，并在可见浏览器中完成首次抖音登录。请勿把 `.env`、Cookie 或浏览器 Profile 发到 Issue 或聊天中。
+
+安装器固定准备项目默认的 `base` 模型 revision `ebe41f70d5b6dfa9166e2c581c45c9c0cfc57b66`。不希望安装阶段联网下载模型时可使用 `-SkipWhisperModelDownload`；此时首次转写可能仍需联网。`base` 模型在当前 Windows 验证环境中的缓存约为 141 MB，实际大小可能变化。
 
 ### 安装到 Claude Code
 
@@ -83,7 +86,7 @@ powershell -ExecutionPolicy Bypass -File .\install.ps1 -InstallFor Claude
 powershell -ExecutionPolicy Bypass -File .\install.ps1 -InstallFor Both
 ```
 
-已有依赖、只想安装 Skill 时，可以使用 `-SkipDependencies`。安装中断后可直接重新运行；安装器只会续用来源、版本和工作区状态均匹配的源码目录，不会覆盖其他非空目录。也可通过 `-ProjectRoot` 指定新的空目录。
+已有依赖时可以使用 `-SkipDependencies`；该参数仍会准备固定的 `base` Whisper 模型，同时使用 `-SkipWhisperModelDownload` 才会一并跳过。安装中断后可直接重新运行；安装器只会续用来源、版本和工作区状态均匹配的源码目录，不会覆盖其他非空目录。也可通过 `-ProjectRoot` 指定新的空目录。
 
 ### 常用口令
 
@@ -144,11 +147,11 @@ v2.0 no longer requires users to locate the upstream project manually. The publi
 
 - Full source fork: [`quziwen/douyin-share@v2.0.0`](https://github.com/quziwen/douyin-share/tree/v2.0.0)
 - Workflow Skill: `skill/douyin-share-monitor` in this repository
-- Windows installer: `install.ps1` (current version: `v2.0.1`)
+- Windows installer: `install.ps1` (current version: `v2.0.2`)
 
 The source is published as a GitHub fork so the original author, history, and upstream relationship remain visible. See [SOURCE.md](SOURCE.md).
 
-`v2.0.1` fixes accidental Python 3.14 selection, safe resume after interruption, and timeouts on slow PyPI connections. The runnable source remains pinned to `douyin-share@v2.0.0`.
+`v2.0.2` downloads the default `base` Whisper model and reloads it in offline mode, preventing a package-only installation from failing at first transcription. It retains the Python 3.11, safe-resume, and slow-download fixes from `v2.0.1`. The runnable source remains pinned to `douyin-share@v2.0.0`.
 
 ### Prerequisites
 
@@ -169,9 +172,11 @@ Set-Location .\douyin-share-monitor-skill
 powershell -ExecutionPolicy Bypass -File .\install.ps1 -InstallFor Codex
 ```
 
-The installer clones the pinned source release, installs Node project dependencies, Playwright Chromium, Python project dependencies, and `faster-whisper`, creates a blank local `.env` from `.env.example`, installs the Skill, writes a local project pointer, and runs automated verification.
+The installer clones the pinned source release, installs Node project dependencies, Playwright Chromium, Python project dependencies, and `faster-whisper`, downloads and offline-verifies the default `base` model, creates a blank local `.env` from `.env.example`, installs the Skill, writes a local project pointer, and runs automated verification.
 
 After setup, fill in the local `.env` and complete the first Douyin login in a visible browser. Never post `.env`, cookies, or browser-profile content in issues or chats.
+
+The installer prepares the project default `base` model at revision `ebe41f70d5b6dfa9166e2c581c45c9c0cfc57b66`. Use `-SkipWhisperModelDownload` to avoid downloading it during setup; first transcription may then require network access. The `base` cache measured about 141 MB in the current Windows validation environment, but actual size may vary.
 
 ### Install for Claude Code
 
@@ -179,7 +184,7 @@ After setup, fill in the local `.env` and complete the first Douyin login in a v
 powershell -ExecutionPolicy Bypass -File .\install.ps1 -InstallFor Claude
 ```
 
-Use `-InstallFor Both` to install both Skill copies. Use `-SkipDependencies` only when the runnable project and its dependencies are already available. An interrupted installation can be rerun safely: the installer resumes only when the source, pinned version, and tracked worktree state match. It never overwrites another non-empty directory; use `-ProjectRoot` to choose a new empty target.
+Use `-InstallFor Both` to install both Skill copies. Use `-SkipDependencies` only when the runnable project and its dependencies are already available; model preparation still runs unless `-SkipWhisperModelDownload` is also set. An interrupted installation can be rerun safely: the installer resumes only when the source, pinned version, and tracked worktree state match. It never overwrites another non-empty directory; use `-ProjectRoot` to choose a new empty target.
 
 ### Example prompts
 

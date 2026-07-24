@@ -6,7 +6,8 @@ param(
     [string]$CodexSkillsRoot = (Join-Path $env:USERPROFILE ".codex\skills"),
     [string]$ClaudeSkillsRoot = (Join-Path $env:USERPROFILE ".claude\skills"),
     [switch]$SkipDependencies,
-    [switch]$SkipVerification
+    [switch]$SkipVerification,
+    [switch]$SkipWhisperModelDownload
 )
 
 Set-StrictMode -Version Latest
@@ -14,9 +15,10 @@ $ErrorActionPreference = "Stop"
 
 $SourceRepository = "https://github.com/quziwen/douyin-share.git"
 $SourceVersion = "v2.0.0"
-$InstallerVersion = "v2.0.1"
+$InstallerVersion = "v2.0.2"
 $SkillName = "douyin-share-monitor"
 $SkillSource = Join-Path $PSScriptRoot "skill\$SkillName"
+$WhisperModelScript = Join-Path $PSScriptRoot "scripts\prepare-whisper-model.py"
 $ProjectRoot = [System.IO.Path]::GetFullPath($ProjectRoot)
 
 function Assert-Command([string]$Name, [string]$InstallHint) {
@@ -222,6 +224,34 @@ if (-not $SkipDependencies) {
     }
     finally {
         Pop-Location
+    }
+}
+
+if ($SkipWhisperModelDownload) {
+    Write-Output "whisper_model_download_skipped:base"
+}
+else {
+    $venvPython = Join-Path $ProjectRoot ".venv\Scripts\python.exe"
+    if (-not (Test-Path -LiteralPath $venvPython)) {
+        throw "whisper_python_missing:$venvPython. Install dependencies or use -SkipWhisperModelDownload."
+    }
+    if (-not (Test-Path -LiteralPath $WhisperModelScript)) {
+        throw "whisper_model_script_missing:$WhisperModelScript"
+    }
+
+    $previousHfDownloadTimeout = $env:HF_HUB_DOWNLOAD_TIMEOUT
+    $previousHfEtagTimeout = $env:HF_HUB_ETAG_TIMEOUT
+    try {
+        $env:HF_HUB_DOWNLOAD_TIMEOUT = "300"
+        $env:HF_HUB_ETAG_TIMEOUT = "30"
+        & $venvPython $WhisperModelScript
+    }
+    finally {
+        $env:HF_HUB_DOWNLOAD_TIMEOUT = $previousHfDownloadTimeout
+        $env:HF_HUB_ETAG_TIMEOUT = $previousHfEtagTimeout
+    }
+    if ($LASTEXITCODE -ne 0) {
+        throw "whisper_model_preparation_failed:base"
     }
 }
 

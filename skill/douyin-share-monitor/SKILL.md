@@ -49,6 +49,7 @@ Accept a full Douyin share message, a `douyin.com` URL, or a `v.douyin.com` shor
 - Prefer the repository's `scripts\start-monitor.ps1` and `scripts\stop-monitor.ps1` when present and validated.
 - If those scripts are absent, use the repository's documented Node/tsx entrypoint after verifying it exists. Do not invent or silently rewrite an entrypoint.
 - Use only the project's controlled Python virtual environment for transcription. Verify the interpreter and dependencies before use; do not switch global Python configuration.
+- Verify the selected Whisper model is locally loadable before processing private media. If setup skipped model preparation and a network download would be required, disclose that download before proceeding.
 - Match monitor processes by both repository context and the monitor entrypoint. Never terminate unrelated Node processes.
 
 ## Single-link workflow

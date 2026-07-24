@@ -5,3 +5,4 @@ Thumbs.db
 .source-version
 .install-test/
 /graphify-out/
+__pycache__/
